@@ -1,6 +1,6 @@
 import requests
 import tabulate
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Application, CommandHandler, MessageHandler, Filters
 API_URL= "http://localhost:8000/getData/"
 # Función de inicio
 def start(update, context):
@@ -41,19 +41,19 @@ def obtenInformacion(update, context):
 def main():
     # Token de tu bot
     bot_token = '7424854412:AAGrMcnVxQbhOmhpgNuehLbuHFeFChIBO-s'
-    updater = Updater(bot_token,use_context=True)
-    dispatcher = updater.dispatcher
+    application = Application(bot_token,use_context=True)
+    
 
     # Comandos y manejo de mensajes
-    dispatcher.add_handler(CommandHandler('start', start))
-    dispatcher.add_handler(CommandHandler('informacion', obtenInformacion))
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('informacion', obtenInformacion))
 
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    application.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
     
     # Iniciar el bot
-    updater.start_polling()
+    application.start_polling()
     
     # Correr el bot hasta que se detenga con Ctrl+C
-    updater.idle()
+    application.idle()
 if __name__ == '__main__':
     main()
