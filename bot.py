@@ -2,6 +2,8 @@ import requests
 import tabulate
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 API_URL= "http://localhost:8000/getData/"
+# Token de tºu bot
+TOKEN_BOT = '7424854412:AAGrMcnVxQbhOmhpgNuehLbuHFeFChIBO-s'
 # Función de inicio
 def start(update, context):
     update.message.reply_text("¡Hola! Soy tu bot cuidador de plantas!!!.")
@@ -39,10 +41,8 @@ def obtenInformacion(update, context):
     
 
 def main():
-    # Token de tu bot
-    bot_token = '7424854412:AAGrMcnVxQbhOmhpgNuehLbuHFeFChIBO-s'
-    application = Application(bot_token,use_context=True)
-    
+    # Crear la aplicación
+    application = Application.builder().token("TOKEN").build()
 
     # Comandos y manejo de mensajes
     application.add_handler(CommandHandler('start', start))
