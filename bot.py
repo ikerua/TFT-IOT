@@ -48,7 +48,7 @@ def main():
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('informacion', obtenInformacion))
 
-    application.add_handler(MessageHandler(filters.text & ~filters.command, echo))
+    application.add_handler(MessageHandler(filters.Filters.text & ~filters.Filters.command, echo))
     
     # Iniciar el bot
     application.start_polling()
