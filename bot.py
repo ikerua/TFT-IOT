@@ -1,6 +1,6 @@
 import requests
 import tabulate
-from telegram.ext import Application, CommandHandler, MessageHandler, Filters
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 API_URL= "http://localhost:8000/getData/"
 # Función de inicio
 def start(update, context):
@@ -48,7 +48,7 @@ def main():
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('informacion', obtenInformacion))
 
-    application.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    application.add_handler(MessageHandler(filters.text & ~filters.command, echo))
     
     # Iniciar el bot
     application.start_polling()
