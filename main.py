@@ -14,6 +14,7 @@ DATABASE_HOST = "database-iot.cipkgcowlii2.us-east-1.rds.amazonaws.com"
 DATABASE_NAME = "TFT_IOT"
 DATABASE_TABLE = "dataSensores"
 
+
 # Configuración de la conexión a la base de datos
 db_config = {
     'user': DATABASE_USER,

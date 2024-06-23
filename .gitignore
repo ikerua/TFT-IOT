@@ -1,4 +1,3 @@
 fastapi-iot/
 CLAVES-TFT.pem
-Arduino-TFT_IoT/
-Arduino-TFT_IoT/Arduino_TFT_IoT.ino
+Arduino_TFT_IoT/
