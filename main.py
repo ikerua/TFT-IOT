@@ -104,7 +104,7 @@ async def input_data(request: Request):
         raise http_err
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-@app.post("/getData")
+@app.post("/getData/")
 async def get_data_HTTP(request: Request):
     try:
         query_string = await request.body()

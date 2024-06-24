@@ -3,7 +3,7 @@ import tabulate
 import logging
 from telegram import  InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler,CallbackQueryHandler,filters, ContextTypes
-API_URL= "http://http://52.72.84.66:8000/getData/"
+API_URL= "http://52.72.84.66:8000/getData/"
 # Token de tºu bot
 TOKEN_BOT = '7424854412:AAGrMcnVxQbhOmhpgNuehLbuHFeFChIBO-s'
 
