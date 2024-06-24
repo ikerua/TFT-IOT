@@ -31,7 +31,7 @@ class InputData(BaseModel):
     temperatura: float
     humedad: float
 class GetData(BaseModel):
-    numeroRegistros: int
+    numRegistros: int
 
 def parse_query_string(query_string: str) -> Dict[str, float]:
     params = parse_qs(query_string)
@@ -128,9 +128,10 @@ async def get_data_HTTP(request: Request):
         print("Query string: ", query_decode)
         # Crear un diccionario de los datos decodificados
         input_dict = {kv.split('=')[0]: float(kv.split('=')[1]) for kv in query_decode.split('&')}
-
+        print("Input dict: ", input_dict)
         # Crear un objeto GetData a partir del diccionario
         input_data = GetData(**input_dict)
+        print("Input data: ", input_data)
         # Obtener los datos de la base de datos
         result = await get_data(input_data.numeroRegistros)
         if result:
