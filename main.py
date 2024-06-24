@@ -99,9 +99,11 @@ def root():
 
 @app.post("/insertData/")
 async def input_data(request: Request):
+    print("Inserting data...")
     try:
         query_string = await request.body()
         query_decode = unquote(query_string.decode())
+        print("Query string: ", query_decode)
         # Crear un diccionario de los datos decodificados
         input_dict = {kv.split('=')[0]: float(kv.split('=')[1]) for kv in query_decode.split('&')}
 
@@ -119,9 +121,11 @@ async def input_data(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 @app.post("/getData/")
 async def get_data_HTTP(request: Request):
+    print("Getting data...")
     try:
         query_string = await request.body()
         query_decode = unquote(query_string.decode())
+        print("Query string: ", query_decode)
         # Crear un diccionario de los datos decodificados
         input_dict = {kv.split('=')[0]: float(kv.split('=')[1]) for kv in query_decode.split('&')}
 
