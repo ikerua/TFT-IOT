@@ -7,6 +7,7 @@ API_URL= "http://52.72.84.66:8000/getData/"
 # Token de tºu bot
 TOKEN_BOT = '7424854412:AAGrMcnVxQbhOmhpgNuehLbuHFeFChIBO-s'
 
+HEADERS_GET = ['Fecha','Monóxido de Carbono','Luz','Presión', 'Altitud','Temperatura', 'Humedad']
 
 # Enable logging
 logging.basicConfig(
@@ -74,9 +75,10 @@ async def button_callback(update, context):
         await query.message.reply_text("No se pudo obtener la información.")
         return
     # Crear una tabla con la información obtenida
-    headers = data[0].keys()
-    rows = [list(x.values()) for x in data]
-    table = tabulate.tabulate(rows, headers, tablefmt="grid")
+    print(data)
+    headers = HEADERS_GET
+    
+    table = tabulate.tabulate(data, headers, tablefmt="grid")
     await query.message.reply_text(f'<pre>{table}</pre>', parse_mode='HTML')
 
 def main():
