@@ -133,7 +133,7 @@ async def get_data_HTTP(request: Request):
         input_data = GetData(**input_dict)
         print("Input data: ", input_data)
         # Obtener los datos de la base de datos
-        result = await get_data(input_data.numeroRegistros)
+        result = await get_data(input_data.numRegistros)
         if result:
             return result
         else:
