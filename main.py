@@ -41,6 +41,7 @@ def parse_query_string(query_string: str) -> Dict[str, float]:
 # Función para insertar datos en la base de datos
 async def insert_data(input_data: InputData):
     connection = await aiomysql.connect(**db_config)
+    print("Conexión establecida")
     async with connection.cursor() as cursor:
         try:
             insert_query = """
@@ -66,19 +67,31 @@ async def insert_data(input_data: InputData):
 
 # Función para obtener datos de la base de datos (últimos n registros)
 async def get_data(n=1):
-    connection = await aiomysql.connect(**db_config)
-    async with connection.cursor() as cursor:
-        try:
-            select_query = f"SELECT * FROM {DATABASE_TABLE} ORDER BY timestamp DESC LIMIT {n}"
-            print(select_query)
-            await cursor.execute(select_query)
-            data = await cursor.fetchall()
-            return data
-        except Exception as e:
-            print(f"ERROR: {e}")
-            return None
-        finally:
-            connection.close()
+    try:
+        # Conexión a la base de datos
+        connection = await aiomysql.connect(**db_config)
+        print("Conexión a la base de datos exitosa")
+        
+        async with connection.cursor() as cursor:
+            try:
+                # Verificación de conexión
+                await cursor.execute("SELECT 1")
+                await cursor.fetchall()
+                print("Verificación de conexión exitosa")
+
+                # Consulta para obtener datos
+                select_query = f"SELECT * FROM {DATABASE_TABLE} ORDER BY timestamp DESC LIMIT {n}"
+                await cursor.execute(select_query)
+                data = await cursor.fetchall()
+                return data
+            except Exception as e:
+                print(f"ERROR durante la consulta: {e}")
+                return None
+            finally:
+                connection.close()
+    except Exception as e:
+        print(f"ERROR al conectar a la base de datos: {e}")
+        return None
 
 @app.get("/")
 def root():
