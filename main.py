@@ -78,6 +78,10 @@ async def get_data(n=1):
             return None
         finally:
             connection.close()
+            
+@app.get("/")
+def root():
+    return {"message": "Hello AWS"}
 
 @app.post("/insertData/")
 async def input_data(request: Request):
