@@ -70,6 +70,7 @@ async def get_data(n=1):
     async with connection.cursor() as cursor:
         try:
             select_query = f"SELECT * FROM {DATABASE_TABLE} ORDER BY timestamp DESC LIMIT {n}"
+            print(select_query)
             await cursor.execute(select_query)
             data = await cursor.fetchall()
             return data
@@ -78,7 +79,7 @@ async def get_data(n=1):
             return None
         finally:
             connection.close()
-            
+
 @app.get("/")
 def root():
     return {"message": "Hello AWS"}

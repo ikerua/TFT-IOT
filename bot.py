@@ -3,7 +3,7 @@ import tabulate
 import logging
 from telegram import  InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler,CallbackQueryHandler,filters, ContextTypes
-API_URL= "http://localhost:8000/getData/"
+API_URL= "http://http://52.72.84.66:8000/getData/"
 # Token de tºu bot
 TOKEN_BOT = '7424854412:AAGrMcnVxQbhOmhpgNuehLbuHFeFChIBO-s'
 
@@ -28,13 +28,15 @@ async def echo(update, context: ContextTypes.DEFAULT_TYPE):
     update.message.reply_text(update.message.text)
 
 def get_data_from_api(numRegistros) -> list:
-    data = { "numeroRegistros": numRegistros}
-    response = requests.post(API_URL, data=data)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
+    data = {'numRegistros': numRegistros}
+    print(f"Making a request to {API_URL} with data: {data}")  # Debug statement
+    try:
+        response = requests.post(API_URL, data=data)
+        response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")  # Print out the error
         return None
+    return response.json()
 async def obtenInformacion(update, context):
     # Preguntar al usuario el numero de informacion que quiere obtener en minutos y enviarla
      # Crear los botones
@@ -66,8 +68,8 @@ async def button_callback(update, context):
     await query.message.reply_text(f"Obteniendo información de los últimos {numRegistros} registros...")
 
     # Obtener la información de la API
-    # data = get_data_from_api(numeroRegistros)
-    data =[{'id': 1, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 2, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 3, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 4, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 5, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 6, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 7, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}]
+    data = get_data_from_api(numRegistros)
+    # data =[{'id': 1, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 2, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 3, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 4, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 5, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 6, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}, {'id': 7, 'fecha': '2021-10-01 00:00:00', 'temperatura': 25.0, 'humedad': 50.0, 'luz': 100.0, 'humedad_suelo': 50.0, 'riego': 1}]
     if data is None:
         await query.message.reply_text("No se pudo obtener la información.")
         return
