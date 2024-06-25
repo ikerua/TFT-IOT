@@ -61,9 +61,13 @@ async def monoxido_carbono(update, context):
         return
 
     # Crear una grafica con la información obtenida
+     # Asegurarse de que la data sea una lista de diccionarios
     print(data)
-    x = [i['fecha'] for i in data]
-    y = [i['monoxido_de_carbono'] for i in data]
+    try:
+        x,y = [(i[0],i[1])for i in data]
+    except (TypeError, KeyError) as e:
+        await update.message.reply_text("Error procesando los datos de la API.")
+        return
 
     plt.figure()
     plt.plot(x, y)
@@ -80,7 +84,8 @@ async def monoxido_carbono(update, context):
 
     # Enviar el archivo de imagen a través del bot de Telegram
     with open(image_path, 'rb') as image_file:
-        await context.bot.send_photo(chat_id=update.message.chat_id, photo=image_file)
+        await context.bot.send_photo(chat_id=update.message.chat_id, photo=image_file,
+                                      caption='Niveles de Monóxido de Carbono')
 
     # Eliminar el archivo temporal
     os.remove(image_path)
@@ -135,8 +140,8 @@ def main():
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('informacion', obtenInformacion))
     application.add_handler(CallbackQueryHandler(button_callback))
-    application.add_handler(MessageHandler(None, echo))
     application.add_handler(CommandHandler('monoxido', monoxido_carbono))
+    application.add_handler(MessageHandler(None, echo))
     # Iniciar el bot
     application.run_polling()
     
