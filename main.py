@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
+import json
 from typing import Dict
 import aiomysql
 
@@ -105,7 +106,7 @@ async def input_data(request: Request):
         query_decode = unquote(query_string.decode())
         print("Query string: ", query_decode)
         # Crear un diccionario de los datos decodificados
-        input_dict = {kv.split(':')[0]: float(kv.split(':')[1]) for kv in query_decode.split(',')}
+        input_dict = json.loads(query_decode)
         print("Input dict: ", input_dict)   
         # Crear un objeto InputData a partir del diccionario
         input_data = InputData(**input_dict)
