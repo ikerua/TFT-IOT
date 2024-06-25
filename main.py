@@ -102,7 +102,7 @@ async def get_data_variables(n=1,variables=None):
                 # Crear la cadena de variables
                 variables_str = ", ".join(variables)
                 # Consulta para obtener datos
-                if len(variables) > 1:
+                if len(variables) < 1:
                     select_query = f"SELECT timestamp,{variables_str} FROM {DATABASE_TABLE} ORDER BY timestamp ASC LIMIT {n}"
                     print(select_query)
                     await cursor.execute(select_query)

@@ -55,7 +55,7 @@ def get_data_from_api_variable(numRegistros,tipo) -> list:
         return None
     print(f"Making a request to {url} with data: {data}")  # Debug statement
     try:
-        response = requests.post(url,data=dataJSON)
+        response = requests.get(url,data=dataJSON)
         response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")  # Print out the error
