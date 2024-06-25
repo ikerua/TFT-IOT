@@ -99,11 +99,10 @@ async def get_data_variables(n=1,variables=None):
                 await cursor.execute("SELECT 1")
                 await cursor.fetchall()
                 print("Verificación de conexión exitosa")
-                # Crear la cadena de variables
-                print(variables)
+
                 # Consulta para obtener datos
                 if len(variables) > 0:
-                    select_query = f"SELECT timestamp,{variables} FROM {DATABASE_TABLE} ORDER BY timestamp ASC LIMIT {n}"
+                    select_query = f"SELECT timestamp,{variables[0]} FROM {DATABASE_TABLE} ORDER BY timestamp ASC LIMIT {n}"
                     print(select_query)
                     await cursor.execute(select_query)
                     data = await cursor.fetchall()
