@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 from telegram import  InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler,CallbackQueryHandler,filters, ContextTypes
 API_URL= "http://52.72.84.66:8000/getData/"
+API_URL_MONOXIDO = "http://52.72.84.66:8000/monoxido/"
+API_URL_LUZ = "http://52.72.84.66:8000/luz/"
+
 # Token de tºu bot
 TOKEN_BOT = '7424854412:AAGrMcnVxQbhOmhpgNuehLbuHFeFChIBO-s'
 
@@ -40,13 +43,19 @@ def get_data_from_api(numRegistros) -> list:
         return None
     return response.json()
 
-def get_data_from_api_variable(numRegistros,listaVariables = None) -> list:
+def get_data_from_api_variable(numRegistros,tipo) -> list:
     #numRegistros = int(numRegistros)
-    data = {"numRegistros":numRegistros, "listaVariables":listaVariables}
+    data = {"numRegistros":numRegistros}
     dataJSON = json.dumps(data)
-    print(f"Making a request to {API_URL} with data: {data}")  # Debug statement
+    if tipo == "monoxido_de_carbono":
+        url = API_URL_MONOXIDO
+    elif tipo == "luz":
+        url = API_URL_LUZ
+    else:
+        return None
+    print(f"Making a request to {url} with data: {data}")  # Debug statement
     try:
-        response = requests.post(API_URL,data=dataJSON)
+        response = requests.post(url,data=dataJSON)
         response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")  # Print out the error
@@ -55,7 +64,7 @@ def get_data_from_api_variable(numRegistros,listaVariables = None) -> list:
 async def monoxido_carbono(update, context):
     await update.message.reply_text("Obteniendo información de monóxido de carbono...")
     # Obtener la información de la API
-    data = get_data_from_api_variable(24,["monoxido_de_carbono"])
+    data = get_data_from_api_variable(24,"monoxido_de_carbono")
     if data is None:
         await update.message.reply_text("No se pudo obtener la información.")
         return
@@ -64,7 +73,11 @@ async def monoxido_carbono(update, context):
      # Asegurarse de que la data sea una lista de diccionarios
     print(data)
     try:
-        x,y = [(i[0],i[1])for i in data]
+        x = []
+        y = []
+        for item in data:
+            x.append(item[0])
+            y.append(item[1])
     except (TypeError, KeyError) as e:
         await update.message.reply_text("Error procesando los datos de la API.")
         return
