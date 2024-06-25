@@ -98,6 +98,10 @@ async def get_data(n=1):
 def root():
     return {"message": "Hello AWS"}
 
+@app.post("/")
+def root():
+    return {"message": "Hello AWS"}
+
 @app.post("/insertData/")
 async def input_data(request: Request):
     print("Inserting data...")
@@ -128,8 +132,8 @@ async def get_data_HTTP(request: Request):
         query_decode = unquote(query_string.decode())
         print("Query string: ", query_decode)
         # Crear un diccionario de los datos decodificados
-        input_dict = {kv.split('=')[0]: float(kv.split('=')[1]) for kv in query_decode.split('&')}
-        print("Input dict: ", input_dict)
+        input_dict = json.loads(query_decode)
+        print("Input dict: ", input_dict)   
         # Crear un objeto GetData a partir del diccionario
         input_data = GetData(**input_dict)
         print("Input data: ", input_data)
