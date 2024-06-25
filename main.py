@@ -74,7 +74,7 @@ async def get_data(n=1):
                 print("Verificación de conexión exitosa")
 
                 # Consulta para obtener datos
-                select_query = f"SELECT timestamp,monoxido_de_carbono, luz, FROM {DATABASE_TABLE} ORDER BY timestamp DESC LIMIT {n}"
+                select_query = f"SELECT timestamp,monoxido_de_carbono, luz FROM {DATABASE_TABLE} ORDER BY timestamp DESC LIMIT {n}"
                 await cursor.execute(select_query)
                 data = await cursor.fetchall()
                 return data
