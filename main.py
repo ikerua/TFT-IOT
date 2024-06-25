@@ -27,10 +27,6 @@ db_config = {
 class InputData(BaseModel):
     monoxido_de_carbono: float
     luz: float
-    presion: float
-    altitud: float
-    temperatura: float
-    humedad: float
 class GetData(BaseModel):
     numRegistros: int
 
@@ -46,16 +42,13 @@ async def insert_data(input_data: InputData):
     async with connection.cursor() as cursor:
         try:
             insert_query = """
-                INSERT INTO dataSensores (monoxido_de_carbono, luz, presion, altitud, temperatura, humedad) 
+                INSERT INTO dataSensores (monoxido_de_carbono, luz) 
                 VALUES (%s, %s, %s, %s, %s, %s)
             """
             await cursor.execute(insert_query, (
                 input_data.monoxido_de_carbono, 
                 input_data.luz, 
-                input_data.presion, 
-                input_data.altitud, 
-                input_data.temperatura, 
-                input_data.humedad
+
             ))
             await connection.commit()
             return True
@@ -81,7 +74,7 @@ async def get_data(n=1):
                 print("Verificación de conexión exitosa")
 
                 # Consulta para obtener datos
-                select_query = f"SELECT timestamp,monoxido_de_carbono, luz, presion, altitud, temperatura, humedad FROM {DATABASE_TABLE} ORDER BY timestamp DESC LIMIT {n}"
+                select_query = f"SELECT timestamp,monoxido_de_carbono, luz, FROM {DATABASE_TABLE} ORDER BY timestamp DESC LIMIT {n}"
                 await cursor.execute(select_query)
                 data = await cursor.fetchall()
                 return data
@@ -93,7 +86,38 @@ async def get_data(n=1):
     except Exception as e:
         print(f"ERROR al conectar a la base de datos: {e}")
         return None
-
+    
+async def get_data_variables(n=1,variables=None):
+    try:
+        # Conexión a la base de datos
+        connection = await aiomysql.connect(**db_config)
+        print("Conexión a la base de datos exitosa")
+        
+        async with connection.cursor() as cursor:
+            try:
+                # Verificación de conexión
+                await cursor.execute("SELECT 1")
+                await cursor.fetchall()
+                print("Verificación de conexión exitosa")
+                # Crear la cadena de variables
+                variables_str = ", ".join(variables)
+                # Consulta para obtener datos
+                if len(variables) > 1:
+                    select_query = f"SELECT timestamp,{variables_str} FROM {DATABASE_TABLE} ORDER BY timestamp ASC LIMIT {n}"
+                    await cursor.execute(select_query)
+                    data = await cursor.fetchall()
+                    return data
+                else:
+                    return "No se han seleccionado variables"
+            except Exception as e:
+                print(f"ERROR durante la consulta: {e}")
+                return None
+            finally:
+                connection.close()
+    except Exception as e:
+        print(f"ERROR al conectar a la base de datos: {e}")
+        return None
+    
 @app.get("/")
 def root():
     return {"message": "Hello AWS"}
@@ -139,6 +163,54 @@ async def get_data_HTTP(request: Request):
         print("Input data: ", input_data)
         # Obtener los datos de la base de datos
         result = await get_data(input_data.numRegistros)
+        if result:
+            return result
+        else:
+            raise HTTPException(status_code=404, detail="Error retrieving data")
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/monoxido/")
+async def get_data_monoxido(request: Request):
+    print("Getting data...")
+    try:
+        query_string = await request.body()
+        query_decode = unquote(query_string.decode())
+        print("Query string: ", query_decode)
+        # Crear un diccionario de los datos decodificados
+        input_dict = json.loads(query_decode)
+        print("Input dict: ", input_dict)   
+        # Crear un objeto GetData a partir del diccionario
+        input_data = GetData(**input_dict)
+        print("Input data: ", input_data)
+        # Obtener los datos de la base de datos
+        result = await get_data_variables(input_data.numRegistros,["monoxido_de_carbono"])
+        if result:
+            return result
+        else:
+            raise HTTPException(status_code=404, detail="Error retrieving data")
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/luz/")
+async def get_data_luz(request: Request):
+    print("Getting data...")
+    try:
+        query_string = await request.body()
+        query_decode = unquote(query_string.decode())
+        print("Query string: ", query_decode)
+        # Crear un diccionario de los datos decodificados
+        input_dict = json.loads(query_decode)
+        print("Input dict: ", input_dict)   
+        # Crear un objeto GetData a partir del diccionario
+        input_data = GetData(**input_dict)
+        print("Input data: ", input_data)
+        # Obtener los datos de la base de datos
+        result = await get_data_variables(input_data.numRegistros,["luz"])
         if result:
             return result
         else:

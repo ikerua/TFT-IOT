@@ -1,13 +1,12 @@
-import requests
-import tabulate
-import logging
+import requests,tabulate,logging,tempfile,json,os
+import matplotlib.pyplot as plt
 from telegram import  InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler,CallbackQueryHandler,filters, ContextTypes
 API_URL= "http://52.72.84.66:8000/getData/"
 # Token de tºu bot
 TOKEN_BOT = '7424854412:AAGrMcnVxQbhOmhpgNuehLbuHFeFChIBO-s'
 
-HEADERS_GET = ['Fecha','Monóxido de Carbono','Luz','Presión', 'Altitud','Temperatura', 'Humedad']
+HEADERS_GET = ['Fecha','Monóxido de Carbono','Luz']
 
 # Enable logging
 logging.basicConfig(
@@ -29,15 +28,62 @@ async def echo(update, context: ContextTypes.DEFAULT_TYPE):
     update.message.reply_text(update.message.text)
 
 def get_data_from_api(numRegistros) -> list:
-    data = {'numRegistros': numRegistros}
+    #numRegistros = int(numRegistros)
+    data = {'numRegistros':numRegistros}
+    dataJSON = json.dumps(data)
     print(f"Making a request to {API_URL} with data: {data}")  # Debug statement
     try:
-        response = requests.post(API_URL, data=data)
+        response = requests.post(API_URL,data=dataJSON)
         response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")  # Print out the error
         return None
     return response.json()
+
+def get_data_from_api_variable(numRegistros,listaVariables = None) -> list:
+    #numRegistros = int(numRegistros)
+    data = {"numRegistros":numRegistros, "listaVariables":listaVariables}
+    dataJSON = json.dumps(data)
+    print(f"Making a request to {API_URL} with data: {data}")  # Debug statement
+    try:
+        response = requests.post(API_URL,data=dataJSON)
+        response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")  # Print out the error
+        return None
+    return response.json()
+async def monoxido_carbono(update, context):
+    await update.message.reply_text("Obteniendo información de monóxido de carbono...")
+    # Obtener la información de la API
+    data = get_data_from_api_variable(24,["monoxido_de_carbono"])
+    if data is None:
+        await update.message.reply_text("No se pudo obtener la información.")
+        return
+
+    # Crear una grafica con la información obtenida
+    print(data)
+    x = [i['fecha'] for i in data]
+    y = [i['monoxido_de_carbono'] for i in data]
+
+    plt.figure()
+    plt.plot(x, y)
+    plt.xlabel('Fecha')
+    plt.ylabel('Monóxido de Carbono')
+    plt.title('Niveles de Monóxido de Carbono')
+
+# Guardar la gráfica en un archivo temporal
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
+        plt.savefig(tmpfile.name)
+        image_path = tmpfile.name
+
+    plt.close()
+
+    # Enviar el archivo de imagen a través del bot de Telegram
+    with open(image_path, 'rb') as image_file:
+        await context.bot.send_photo(chat_id=update.message.chat_id, photo=image_file)
+
+    # Eliminar el archivo temporal
+    os.remove(image_path)
 async def obtenInformacion(update, context):
     # Preguntar al usuario el numero de informacion que quiere obtener en minutos y enviarla
      # Crear los botones
