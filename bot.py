@@ -25,7 +25,7 @@ async def start(update, context):
     await update.message.reply_text("¡Hola! Soy tu bot cuidador de plantas!!!.")
     
 async def echo(update, context: ContextTypes.DEFAULT_TYPE):
-    update.message.reply_text(update.message.text)
+   await update.message.reply_text(update.message.text)
 
 def get_data_from_api(numRegistros) -> list:
     #numRegistros = int(numRegistros)
@@ -136,7 +136,7 @@ def main():
     application.add_handler(CommandHandler('informacion', obtenInformacion))
     application.add_handler(CallbackQueryHandler(button_callback))
     application.add_handler(MessageHandler(None, echo))
-    
+    application.add_handler(CommandHandler('monoxido', monoxido_carbono))
     # Iniciar el bot
     application.run_polling()
     

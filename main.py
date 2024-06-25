@@ -43,7 +43,7 @@ async def insert_data(input_data: InputData):
         try:
             insert_query = """
                 INSERT INTO dataSensores (monoxido_de_carbono, luz) 
-                VALUES (%s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s)
             """
             await cursor.execute(insert_query, (
                 input_data.monoxido_de_carbono, 
